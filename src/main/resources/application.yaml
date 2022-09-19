@@ -1,0 +1,21 @@
+server:
+  port: 8181
+
+jwt:
+  secret: testword
+
+pg:
+  data-source:
+    driver-class-name: org.postgresql.Driver
+    jdbc-url: jdbc:postgresql://${DATABASE_HOST}:5432/${DATABASE_NAME}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+
+spring:
+  jpa:
+    generate-ddl: true
+    hibernate.ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true

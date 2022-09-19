@@ -1,23 +1,27 @@
 package project.teamauth.configuration.jwt;
 
-import org.springframework.security.core.userdetails.User;
+import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import project.teamauth.model.User;
+import project.teamauth.repositories.UserRepository;
 
-import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class JwtUserDetailsService implements UserDetailsService {
 
-	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		if ("testuser".equals(username)) {
-			return new User("testuser", "$2a$10$slYQmyNdGzTn7ZLBXBChFOC9f6kFjAqPhccnP6DxlWXx2lPk1C3G6", new ArrayList<>());
-		} else {
-			throw new UsernameNotFoundException("User not found with username: " + username);
-		}
-	}
+    private final UserRepository userRepository;
 
+    @Override
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+        Optional<User> byLogin = userRepository.findByLogin(login);
+        if (byLogin.isPresent()) {
+            return byLogin.get();
+        }
+        throw new UsernameNotFoundException("User not found with login: " + login);
+    }
 }

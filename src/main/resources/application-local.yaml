@@ -1,0 +1,21 @@
+server:
+  port: 8181
+
+jwt:
+  secret: testword
+
+pg:
+  data-source:
+    driver-class-name: org.postgresql.Driver
+    jdbc-url: jdbc:postgresql://localhost:5432/team-auth
+    username: postgres
+    password: demo
+
+spring:
+  jpa:
+    generate-ddl: true
+    hibernate.ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true

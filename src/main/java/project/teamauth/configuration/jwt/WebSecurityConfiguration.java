@@ -16,7 +16,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-//@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfiguration {
 
     @Bean
@@ -43,7 +42,7 @@ public class WebSecurityConfiguration {
                                            DaoAuthenticationProvider daoAuthenticationProvider,
                                            JwtRequestFilter jwtRequestFilter) throws Exception {
         return httpSecurity.csrf().disable()
-                .authorizeRequests().antMatchers("/authenticate").permitAll()
+                .authorizeRequests().antMatchers("/login","/registration").permitAll()
                 .anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and().sessionManagement()

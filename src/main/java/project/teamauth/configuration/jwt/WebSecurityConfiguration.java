@@ -42,7 +42,7 @@ public class WebSecurityConfiguration {
                                            DaoAuthenticationProvider daoAuthenticationProvider,
                                            JwtRequestFilter jwtRequestFilter) throws Exception {
         return httpSecurity.csrf().disable()
-                .authorizeRequests().antMatchers("/login","/registration").permitAll()
+                .authorizeRequests().antMatchers("/v1/login", "/v1/registration").permitAll()
                 .anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and().sessionManagement()

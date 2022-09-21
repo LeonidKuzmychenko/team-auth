@@ -5,7 +5,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import project.teamauth.model.User;
+import project.teamauth.models.User;
 import project.teamauth.repositories.UserRepository;
 
 import java.util.Optional;

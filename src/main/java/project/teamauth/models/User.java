@@ -1,4 +1,4 @@
-package project.teamauth.model;
+package project.teamauth.models;
 
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -32,9 +32,8 @@ public class User implements UserDetails {
     @Transient
     private String passwordConfirm;
 
-    @Column
-    @OneToMany
-    private Set<Subscribe> subscribes = new HashSet<>();
+    @OneToMany(mappedBy = "user")
+    private Set<Subscription> subscriptions = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import project.teamauth.configuration.logging.LoggingFilerChain;
 
 @Configuration
 @EnableWebSecurity
@@ -40,7 +41,8 @@ public class WebSecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity,
                                            JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
                                            DaoAuthenticationProvider daoAuthenticationProvider,
-                                           JwtRequestFilter jwtRequestFilter) throws Exception {
+                                           JwtRequestFilter jwtRequestFilter,
+                                           LoggingFilerChain loggingFilerChain) throws Exception {
         return httpSecurity.csrf().disable()
                 .cors().disable()
                 .authorizeRequests().antMatchers("/v1/login", "/v1/registration").permitAll()
@@ -50,6 +52,7 @@ public class WebSecurityConfiguration {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authenticationProvider(daoAuthenticationProvider)
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(loggingFilerChain, JwtRequestFilter.class)
                 .build();
     }
 }

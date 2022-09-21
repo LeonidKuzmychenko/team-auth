@@ -42,6 +42,7 @@ public class WebSecurityConfiguration {
                                            DaoAuthenticationProvider daoAuthenticationProvider,
                                            JwtRequestFilter jwtRequestFilter) throws Exception {
         return httpSecurity.csrf().disable()
+                .cors().disable()
                 .authorizeRequests().antMatchers("/v1/login", "/v1/registration").permitAll()
                 .anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)

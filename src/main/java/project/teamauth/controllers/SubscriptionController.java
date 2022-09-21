@@ -2,6 +2,7 @@ package project.teamauth.controllers;
 
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,6 +13,7 @@ import project.teamauth.repositories.UserRepository;
 import java.util.Optional;
 import java.util.Set;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/v1")
 @AllArgsConstructor

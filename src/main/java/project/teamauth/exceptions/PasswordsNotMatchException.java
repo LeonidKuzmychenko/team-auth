@@ -10,7 +10,7 @@ public class PasswordsNotMatchException extends RuntimeException {
         super(message);
     }
 
-    public static PasswordsNotMatchException instance(){
+    public static PasswordsNotMatchException instance() {
         return new PasswordsNotMatchException("Passwords not match");
     }
 }

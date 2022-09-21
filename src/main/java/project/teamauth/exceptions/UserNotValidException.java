@@ -10,7 +10,7 @@ public class UserNotValidException extends RuntimeException {
         super(message);
     }
 
-    public static UserNotValidException instance(){
+    public static UserNotValidException instance() {
         return new UserNotValidException("User not valid");
     }
 }

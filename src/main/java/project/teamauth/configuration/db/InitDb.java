@@ -16,6 +16,11 @@ import java.util.Optional;
 @Service("initDb")
 public class InitDb {
 
+    public static int rnd(int min, int max) {
+        max -= min;
+        return (int) (Math.random() * ++max) + min;
+    }
+
     @Autowired
     public void init(UserRepository userRepository, RoleRepository roleRepository, SubscribeRepository subscribeRepository, PasswordEncoder passwordEncoder) {
         Role role = roleRepository.findByName("ROLE_USER").orElseGet(() -> roleRepository.save(new Role("ROLE_USER")));
@@ -26,12 +31,28 @@ public class InitDb {
             user.setLogin("testuser");
             user.setPassword(passwordEncoder.encode("testuser"));
             user.setRoles(Collections.singleton(role));
-            Subscription subscription = new Subscription("Instagram", 1234);
-            subscription.setUser(user);
-            user.setSubscriptions(Collections.singleton(subscription));
-            userRepository.save(user);
-            subscribeRepository.save(subscription);
+            User saveUser = userRepository.save(user);
+
+            saveSubscription(subscribeRepository, saveUser, new Subscription("Instagram", rnd(1000, 9999)));
+            saveSubscription(subscribeRepository, saveUser, new Subscription("Facebook", rnd(1000, 9999)));
+            saveSubscription(subscribeRepository, saveUser, new Subscription("Telegram", rnd(1000, 9999)));
+            saveSubscription(subscribeRepository, saveUser, new Subscription("Google", rnd(1000, 9999)));
+            saveSubscription(subscribeRepository, saveUser, new Subscription("Test1", rnd(1000, 9999)));
+            saveSubscription(subscribeRepository, saveUser, new Subscription("Test2", rnd(1000, 9999)));
+            saveSubscription(subscribeRepository, saveUser, new Subscription("Test3", rnd(1000, 9999)));
+            saveSubscription(subscribeRepository, saveUser, new Subscription("Test4", rnd(1000, 9999)));
+            saveSubscription(subscribeRepository, saveUser, new Subscription("Test5", rnd(1000, 9999)));
+            saveSubscription(subscribeRepository, saveUser, new Subscription("Test6", rnd(1000, 9999)));
+            saveSubscription(subscribeRepository, saveUser, new Subscription("Test7", rnd(1000, 9999)));
+            saveSubscription(subscribeRepository, saveUser, new Subscription("Test8", rnd(1000, 9999)));
+            saveSubscription(subscribeRepository, saveUser, new Subscription("Test9", rnd(1000, 9999)));
         }
+    }
+
+    public void saveSubscription(SubscribeRepository subscribeRepository, User saveUser, Subscription subscription) {
+        saveUser.getSubscriptions().add(subscription);
+        subscription.setUser(saveUser);
+        subscribeRepository.save(subscription);
     }
 
 //    @Autowired
@@ -39,7 +60,7 @@ public class InitDb {
 //        Optional<User> testUser = userRepository.findByLogin("testuser");
 //        if (testUser.isPresent()) {
 //            User user = testUser.get();
-//            Subscription subscription = new Subscription("Instagram", 1234);
+//            Subscription subscription = new Subscription("Instagram", rnd(1000,9999));
 //            subscription.setUser(user);
 //            user.setSubscriptions(Collections.singleton(subscription));
 //            subscribeRepository.save(subscription);

@@ -15,7 +15,7 @@ import project.teamauth.dtos.LoginResponseDto;
 
 import javax.validation.Valid;
 
-@CrossOrigin
+@CrossOrigin()
 @RestController
 @RequestMapping("/v1")
 @AllArgsConstructor

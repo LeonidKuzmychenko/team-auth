@@ -19,17 +19,24 @@ public class Subscription {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(unique = true)
     private String name;
 
     @Column
     private Integer key;
 
+    @Column(name = "partner_user_id")
+    private String partnerUserId;
+
     @JsonIgnore
     @ManyToOne
     private User user;
 
-    public Subscription(String name, Integer key) {
+    @ManyToOne
+    private Partner partner;
+
+    public Subscription(Partner partner, String name, Integer key) {
+        this.partner = partner;
         this.name = name;
         this.key = key;
     }

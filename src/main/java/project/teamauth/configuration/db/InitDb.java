@@ -1,28 +1,42 @@
 package project.teamauth.configuration.db;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
+import project.teamauth.configuration.cache.CacheManager;
+import project.teamauth.dtos.PartnerLoginCacheDto;
+import project.teamauth.models.Partner;
 import project.teamauth.models.Role;
-import project.teamauth.models.Subscription;
 import project.teamauth.models.User;
+import project.teamauth.repositories.PartnerRepository;
 import project.teamauth.repositories.RoleRepository;
-import project.teamauth.repositories.SubscribeRepository;
 import project.teamauth.repositories.UserRepository;
+import project.teamauth.services.SubscribeService;
 
 import java.util.Collections;
 import java.util.Optional;
+import java.util.UUID;
 
-@Service("initDb")
+@Component
+@AllArgsConstructor
 public class InitDb {
 
-    public static int rnd(int min, int max) {
-        max -= min;
-        return (int) (Math.random() * ++max) + min;
-    }
+    private final CacheManager cacheManager;
+    private final PartnerRepository partnerRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final SubscribeService subscribeService;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public void init(UserRepository userRepository, RoleRepository roleRepository, SubscribeRepository subscribeRepository, PasswordEncoder passwordEncoder) {
+    //    public static int rnd(int min, int max) {
+//        max -= min;
+//        return (int) (Math.random() * ++max) + min;
+//    }
+//
+    @EventListener(ApplicationReadyEvent.class)
+    public void init() {
         Role role = roleRepository.findByName("ROLE_USER").orElseGet(() -> roleRepository.save(new Role("ROLE_USER")));
         Optional<User> testUser = userRepository.findByLogin("testuser");
         if (testUser.isEmpty()) {
@@ -33,37 +47,48 @@ public class InitDb {
             user.setRoles(Collections.singleton(role));
             User saveUser = userRepository.save(user);
 
-            saveSubscription(subscribeRepository, saveUser, new Subscription("Instagram", rnd(1000, 9999)));
-            saveSubscription(subscribeRepository, saveUser, new Subscription("Facebook", rnd(1000, 9999)));
-            saveSubscription(subscribeRepository, saveUser, new Subscription("Telegram", rnd(1000, 9999)));
-            saveSubscription(subscribeRepository, saveUser, new Subscription("Google", rnd(1000, 9999)));
-            saveSubscription(subscribeRepository, saveUser, new Subscription("Test1", rnd(1000, 9999)));
-            saveSubscription(subscribeRepository, saveUser, new Subscription("Test2", rnd(1000, 9999)));
-            saveSubscription(subscribeRepository, saveUser, new Subscription("Test3", rnd(1000, 9999)));
-            saveSubscription(subscribeRepository, saveUser, new Subscription("Test4", rnd(1000, 9999)));
-            saveSubscription(subscribeRepository, saveUser, new Subscription("Test5", rnd(1000, 9999)));
-            saveSubscription(subscribeRepository, saveUser, new Subscription("Test6", rnd(1000, 9999)));
-            saveSubscription(subscribeRepository, saveUser, new Subscription("Test7", rnd(1000, 9999)));
-            saveSubscription(subscribeRepository, saveUser, new Subscription("Test8", rnd(1000, 9999)));
-            saveSubscription(subscribeRepository, saveUser, new Subscription("Test9", rnd(1000, 9999)));
+            Partner partner = new Partner();
+            partner.setName("Instagram");
+            partner.setToken(UUID.randomUUID().toString());
+            Partner savedPartner = partnerRepository.save(partner);
+
+            addSubscription(subscribeService, cacheManager, savedPartner);
+//            addSubscription(subscribeService, cacheManager, savedPartner);
+//            addSubscription(subscribeService, cacheManager, savedPartner);
+//            addSubscription(subscribeService, cacheManager, savedPartner);
+//            addSubscription(subscribeService, cacheManager, savedPartner);
+//            addSubscription(subscribeService, cacheManager, savedPartner);
+//            addSubscription(subscribeService, cacheManager, savedPartner);
+
+
+//            saveSubscription(subscribeRepository, saveUser, new Subscription("Instagram", rnd(1000, 9999)));
+//            saveSubscription(subscribeRepository, saveUser, new Subscription("Facebook", rnd(1000, 9999)));
+//            saveSubscription(subscribeRepository, saveUser, new Subscription("Telegram", rnd(1000, 9999)));
+//            saveSubscription(subscribeRepository, saveUser, new Subscription("Google", rnd(1000, 9999)));
+//            saveSubscription(subscribeRepository, saveUser, new Subscription("Test1", rnd(1000, 9999)));
+//            saveSubscription(subscribeRepository, saveUser, new Subscription("Test2", rnd(1000, 9999)));
+//            saveSubscription(subscribeRepository, saveUser, new Subscription("Test3", rnd(1000, 9999)));
+//            saveSubscription(subscribeRepository, saveUser, new Subscription("Test4", rnd(1000, 9999)));
+//            saveSubscription(subscribeRepository, saveUser, new Subscription("Test5", rnd(1000, 9999)));
+//            saveSubscription(subscribeRepository, saveUser, new Subscription("Test6", rnd(1000, 9999)));
+//            saveSubscription(subscribeRepository, saveUser, new Subscription("Test7", rnd(1000, 9999)));
+//            saveSubscription(subscribeRepository, saveUser, new Subscription("Test8", rnd(1000, 9999)));
+//            saveSubscription(subscribeRepository, saveUser, new Subscription("Test9", rnd(1000, 9999)));
         }
     }
 
-    public void saveSubscription(SubscribeRepository subscribeRepository, User saveUser, Subscription subscription) {
-        saveUser.getSubscriptions().add(subscription);
-        subscription.setUser(saveUser);
-        subscribeRepository.save(subscription);
-    }
-
-//    @Autowired
-//    public void initSubscriptions(UserRepository userRepository, SubscribeRepository subscribeRepository) {
-//        Optional<User> testUser = userRepository.findByLogin("testuser");
-//        if (testUser.isPresent()) {
-//            User user = testUser.get();
-//            Subscription subscription = new Subscription("Instagram", rnd(1000,9999));
-//            subscription.setUser(user);
-//            user.setSubscriptions(Collections.singleton(subscription));
-//            subscribeRepository.save(subscription);
-//        }
+//    public void saveSubscription(SubscribeRepository subscribeRepository, User saveUser, Subscription subscription) {
+//        saveUser.getSubscriptions().add(subscription);
+//        subscription.setUser(saveUser);
+//        subscribeRepository.save(subscription);
 //    }
+
+    public void addSubscription(SubscribeService subscribeService, CacheManager cacheManager, Partner partner) {
+        String key = UUID.randomUUID().toString();
+        PartnerLoginCacheDto partnerLoginCacheDto = new PartnerLoginCacheDto();
+        partnerLoginCacheDto.setPartner(partner);
+        partnerLoginCacheDto.setPartnerId("123456");
+        cacheManager.add(key, partnerLoginCacheDto);
+        subscribeService.addSubscription("testuser", key, "Instagram");
+    }
 }

@@ -9,6 +9,7 @@ import project.teamauth.models.Role;
 import project.teamauth.repositories.RoleRepository;
 
 import javax.sql.DataSource;
+import java.util.Optional;
 
 @Configuration
 public class DataBaseConfiguration {
@@ -20,8 +21,7 @@ public class DataBaseConfiguration {
     }
 
     @Bean
-    @DependsOn("initDb")
     public Role defaultRole(RoleRepository repository) {
-        return repository.findByName("ROLE_USER").get();
+        return repository.findByName("ROLE_USER").orElseGet(() -> repository.save(new Role("ROLE_USER")));
     }
 }

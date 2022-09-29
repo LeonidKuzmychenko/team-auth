@@ -18,21 +18,33 @@ import java.util.Optional;
 public class UserService {
 
     private final UserMapper userMapper;
-    private final UserRepository repository;
+    private final UserRepository userRepository;
+
+    public User save(User user) {
+        return userRepository.save(user);
+    }
 
     public User register(RegistrationRequestDto dto) {
         if (!dto.getPassword1().equals(dto.getPassword2())) {
             throw PasswordsNotMatchException.instance();
         }
         User user = userMapper.fromRegistrationDto(dto);
-        Optional<User> byLogin = repository.findByLogin(user.getLogin());
-        Optional<User> byEmail = repository.findByEmail(user.getEmail());
+        Optional<User> byLogin = userRepository.findByLogin(user.getLogin());
+        Optional<User> byEmail = userRepository.findByEmail(user.getEmail());
         if (!Strings.hasLength(user.getEmail()) || !Strings.hasLength(user.getLogin())) {
             throw UserNotValidException.instance();
         }
         if (byLogin.isPresent() || byEmail.isPresent()) {
             throw UserAlreadyExistException.instance();
         }
-        return repository.save(user);
+        return userRepository.save(user);
+    }
+
+    public User findByLogin(String login) {
+        Optional<User> byLogin = userRepository.findByLogin(login);
+        if (byLogin.isPresent()) {
+            return byLogin.get();
+        }
+        throw new RuntimeException();
     }
 }

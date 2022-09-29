@@ -1,6 +1,7 @@
 package project.teamauth.configuration.jwt;
 
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Role;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -9,6 +10,7 @@ import project.teamauth.models.User;
 import project.teamauth.repositories.UserRepository;
 
 import java.util.Optional;
+
 
 @Service
 @AllArgsConstructor

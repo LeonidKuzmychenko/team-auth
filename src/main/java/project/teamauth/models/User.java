@@ -23,10 +23,10 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(unique = true)
     private String email;
 
-    @Column
+    @Column(unique = true)
     private String login;
 
     @Column
@@ -35,7 +35,7 @@ public class User implements UserDetails {
     @Transient
     private String passwordConfirm;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private Set<Subscription> subscriptions = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.EAGER)

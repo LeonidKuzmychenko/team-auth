@@ -1,6 +1,7 @@
 package project.teamauth.controllers;
 
 import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Role;
 import org.springframework.web.bind.annotation.*;
 import project.teamauth.dtos.RegistrationRequestDto;
 import project.teamauth.models.User;
